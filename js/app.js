@@ -1,10 +1,9 @@
 // today-i-ate main entry. Renders all views and wires events.
 
 (function () {
-  // Bump this AND CACHE_NAME in sw.js together on each release. The string
-  // shows up in the menu sheet's footer so you can verify which build
+  // Shows up in the menu sheet's footer so you can verify which build
   // is currently live on your home-screen PWA.
-  const APP_VERSION = "v1";
+  const APP_VERSION = "v1.01";
 
   // ---------- Date helpers ----------
 
