@@ -1,43 +1,44 @@
 /* Today I Ate — visual refresh */
 
 :root {
-  /* Warm light palette */
-  --bg: #fbf8f3;
-  --bg-elev: #ffffff;
+  /* Warm kitchen palette */
+  --bg: #faf6ef;
+  --bg-elev: #fffdf8;
   --bg-elev-2: #f1ece2;
-  --fg: #1c1917;
-  --fg-muted: #78716c;
-  --fg-subtle: #a8a29e;
+  --fg: #2b251f;
+  --fg-muted: #7a7068;
+  --fg-subtle: #a89e92;
   --border: #ece6da;
   --border-strong: #d6cfc1;
 
-  /* Accents */
-  --accent: #6366f1;
-  --accent-soft: #eef2ff;
-  --accent-strong: #4f46e5;
+  /* Primary: sage. Secondary: terracotta (used sparingly for highlights). */
+  --accent: #5a7355;
+  --accent-soft: #e6ede0;
+  --accent-strong: #475d44;
   --accent-fg: #ffffff;
+  --accent2: #c47b5d;
+  --accent2-soft: #f4e2d6;
 
-  /* Semantic states */
-  --yes: #ef4444;
-  --yes-soft: #fee2e2;
-  --no: #10b981;
-  --no-soft: #d1fae5;
-  --unset: #a8a29e;
-  --warn: #f59e0b;
-  --warn-soft: #fef3c7;
-  --danger: #dc2626;
+  /* Semantic states (clay red / herb green) */
+  --yes: #b85547;
+  --yes-soft: #f4dcd6;
+  --no: #6b8e5a;
+  --no-soft: #dde7d3;
+  --unset: #a89e92;
+  --warn: #d4925a;
+  --warn-soft: #f4e2d0;
+  --danger: #b85547;
 
   /* Effects */
   --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.06);
   --shadow: 0 2px 4px rgba(28, 25, 23, 0.05), 0 8px 24px rgba(28, 25, 23, 0.06);
   --shadow-lg: 0 8px 16px rgba(28, 25, 23, 0.08), 0 24px 48px rgba(28, 25, 23, 0.12);
-  --shadow-fab: 0 6px 16px rgba(99, 102, 241, 0.28), 0 2px 4px rgba(28, 25, 23, 0.12);
 
   /* Geometry */
   --tap: 44px;
-  --radius: 14px;
-  --radius-sm: 10px;
-  --radius-lg: 20px;
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-lg: 22px;
   --space-1: 6px;
   --space-2: 10px;
   --space-3: 16px;
@@ -48,7 +49,10 @@
   --fab-option-size: 76px;
   --fab-radius: 115px;
 
-  /* Per-category hues */
+  /* Headline serif used on prominent labels */
+  --font-serif: ui-serif, Georgia, "Times New Roman", serif;
+
+  /* Per-category hues — kept saturated for food semantics */
   --cat-dairy: #fbbf24;
   --cat-grains: #d97706;
   --cat-legumes: #92400e;
@@ -63,38 +67,41 @@
   --cat-beverages: #14b8a6;
   --cat-condiments: #ef4444;
   --cat-other: #78716c;
-  --cat-custom: #6366f1;
+  --cat-custom: #c47b5d;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0e0e10;
-    --bg-elev: #18181b;
-    --bg-elev-2: #27272a;
-    --fg: #f4f1ea;
-    --fg-muted: #a1a1aa;
-    --fg-subtle: #71717a;
-    --border: #2a2a2e;
-    --border-strong: #3f3f46;
+    /* Deep cocoa, like an espresso-stained kitchen counter at night */
+    --bg: #1f1a13;
+    --bg-elev: #2a241c;
+    --bg-elev-2: #362e24;
+    --fg: #ede6d6;
+    --fg-muted: #a99e89;
+    --fg-subtle: #756a58;
+    --border: #3d362c;
+    --border-strong: #524838;
 
-    --accent: #818cf8;
-    --accent-soft: #1e1b4b;
-    --accent-strong: #a5b4fc;
-    --accent-fg: #0e0e10;
+    /* Lighter sage so it reads on dark; warmer terracotta */
+    --accent: #95b88b;
+    --accent-soft: #2e3a2a;
+    --accent-strong: #b3d2aa;
+    --accent-fg: #1f1a13;
+    --accent2: #e09678;
+    --accent2-soft: #3d2920;
 
-    --yes: #f87171;
-    --yes-soft: #3f1d1d;
-    --no: #34d399;
-    --no-soft: #064e3b;
-    --unset: #71717a;
-    --warn: #fbbf24;
-    --warn-soft: #422c0a;
-    --danger: #f87171;
+    --yes: #d4766a;
+    --yes-soft: #3d2520;
+    --no: #99bb87;
+    --no-soft: #2a3622;
+    --unset: #756a58;
+    --warn: #e6a56e;
+    --warn-soft: #3d2820;
+    --danger: #d4766a;
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
     --shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.45);
     --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.45), 0 24px 48px rgba(0, 0, 0, 0.55);
-    --shadow-fab: 0 6px 16px rgba(129, 140, 248, 0.32), 0 2px 4px rgba(0, 0, 0, 0.5);
 
     --cat-dairy: #fcd34d;
     --cat-grains: #fbbf24;
@@ -109,13 +116,19 @@
     --cat-sweeteners: #c084fc;
     --cat-beverages: #2dd4bf;
     --cat-condiments: #f87171;
-    --cat-other: #a1a1aa;
-    --cat-custom: #a5b4fc;
+    --cat-other: #a99e89;
+    --cat-custom: #e09678;
   }
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  /* Shrink the base unit; geometry tokens stay px so the chrome doesn't
+     get tiny along with the text. */
+  font-size: 11px;
 }
 
 html,
@@ -127,7 +140,7 @@ body {
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
     Cantarell, "Helvetica Neue", sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.45;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
@@ -136,10 +149,7 @@ body {
 body {
   min-height: 100vh;
   min-height: 100dvh;
-  background:
-    radial-gradient(120% 60% at 50% -10%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 60%),
-    var(--bg);
-  background-attachment: fixed;
+  background: var(--bg);
 }
 
 #app {
@@ -150,7 +160,7 @@ body {
 }
 
 /* On the Today tab the symptom FAB floats above the tab bar; reserve room
-   for it so the day-note textarea isn't obscured at scroll-end. */
+   for it so the page bottom isn't obscured at scroll-end. */
 body[data-tab="today"] #app {
   padding-bottom: calc(
     var(--tab-bar-h)
@@ -171,7 +181,20 @@ button {
   padding: calc(env(safe-area-inset-top) + var(--space-3)) var(--space-3) var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
+}
+
+/* Today fills the viewport so the centered + button has space to live in.
+   Leave room for the tab bar + the symptom FAB at the bottom. */
+.view-today {
+  min-height: calc(
+    100dvh
+    - var(--tab-bar-h)
+    - var(--fab-size)
+    - var(--space-5)
+    - env(safe-area-inset-top)
+    - env(safe-area-inset-bottom)
+  );
 }
 
 .view[hidden] {
@@ -192,7 +215,7 @@ button {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent2);
 }
 
 .page-title {
@@ -284,9 +307,10 @@ button {
 .day-label {
   flex: 1;
   text-align: center;
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.005em;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0;
   background: transparent;
   border: 0;
   color: var(--fg);
@@ -365,10 +389,10 @@ button {
 }
 
 .chip.selected {
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  border-color: var(--accent-strong);
+  background: var(--accent);
+  border-color: var(--accent);
   color: var(--accent-fg);
-  box-shadow: 0 2px 6px color-mix(in srgb, var(--accent) 40%, transparent);
+  box-shadow: var(--shadow-sm);
 }
 
 .chip .chip-x {
@@ -380,9 +404,83 @@ button {
 }
 
 .chip-empty {
-  color: var(--fg-muted);
-  font-size: 0.9rem;
+  color: var(--fg-subtle);
+  font-size: 0.95rem;
+  font-style: italic;
   padding: var(--space-1) 0;
+}
+
+/* ---------- Unknown / wildcard chip ---------- */
+
+.unknown-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chip-unknown {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1.5px dashed var(--accent2);
+  color: var(--accent2);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  align-self: flex-start;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.12s ease, color 0.12s ease,
+              border-style 0.12s ease, transform 0.08s ease;
+}
+
+.chip-unknown::before {
+  content: "?";
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent2);
+  color: var(--bg);
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.chip-unknown.selected {
+  background: var(--accent2);
+  color: var(--bg);
+  border-style: solid;
+}
+
+.chip-unknown.selected::before {
+  background: var(--bg);
+  color: var(--accent2);
+}
+
+.chip-unknown:active {
+  transform: scale(0.97);
+}
+
+.chip-unknown .chip-x {
+  color: inherit;
+  opacity: 0.7;
+  font-size: 1rem;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+.unknown-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--fg-muted);
+  font-style: italic;
+  line-height: 1.4;
 }
 
 .ghost-btn {
@@ -408,6 +506,34 @@ button {
   border: 0;
   color: var(--fg-muted);
   cursor: pointer;
+}
+
+/* Today's primary CTA — a quiet circular + button. Vertically centers in
+   the leftover space below the logged chips; gets pushed down naturally
+   once the logged list grows past half the screen. */
+.add-foods-btn {
+  align-self: center;
+  margin-top: auto;
+  margin-bottom: auto;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1.5px dashed var(--border-strong);
+  color: var(--fg-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s ease, color 0.12s ease,
+              border-color 0.12s ease, transform 0.08s ease;
+}
+
+.add-foods-btn:active {
+  background: var(--bg-elev);
+  color: var(--fg);
+  border-color: var(--fg-muted);
+  transform: scale(0.95);
 }
 
 /* ---------- Search & food list ---------- */
@@ -493,25 +619,6 @@ button {
   align-items: center;
 }
 
-/* ---------- Note ---------- */
-
-#day-note {
-  width: 100%;
-  background: var(--bg-elev);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--fg);
-  padding: 12px 14px;
-  font-size: 1rem;
-  font-family: inherit;
-  resize: vertical;
-  box-shadow: var(--shadow-sm);
-}
-
-#day-note::placeholder {
-  color: var(--fg-subtle);
-}
-
 /* ---------- Calendar ---------- */
 
 .calendar-legend {
@@ -581,10 +688,10 @@ button {
 }
 
 .cal-cell.today {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--accent2);
   outline-offset: -2px;
-  background: var(--accent-soft);
-  color: var(--accent-strong);
+  background: var(--accent2-soft);
+  color: var(--accent2);
   font-weight: 700;
 }
 
@@ -609,9 +716,10 @@ button {
 
 .insights-title {
   margin: 0;
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.005em;
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0;
 }
 
 .insights-summary {
@@ -956,18 +1064,14 @@ body:not([data-tab="today"]) .fab-host {
   background: var(--bg-elev);
   color: var(--fg);
   border: 2.5px solid var(--yes);
-  box-shadow:
-    0 8px 22px color-mix(in srgb, var(--yes) 26%, transparent),
-    var(--shadow-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .fab-cluster[data-state="no"] .fab-main {
   background: var(--bg-elev);
   color: var(--fg);
   border: 2.5px solid var(--no);
-  box-shadow:
-    0 8px 22px color-mix(in srgb, var(--no) 26%, transparent),
-    var(--shadow-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .fab-cluster[data-state="unset"] .fab-main {
@@ -1019,16 +1123,12 @@ body:not([data-tab="today"]) .fab-host {
 .fab-option-no {
   background: var(--bg-elev);
   border: 2.5px solid var(--no);
-  box-shadow:
-    0 4px 14px color-mix(in srgb, var(--no) 22%, transparent),
-    var(--shadow-sm);
+  box-shadow: var(--shadow-sm);
 }
 .fab-option-yes {
   background: var(--bg-elev);
   border: 2.5px solid var(--yes);
-  box-shadow:
-    0 4px 14px color-mix(in srgb, var(--yes) 22%, transparent),
-    var(--shadow-sm);
+  box-shadow: var(--shadow-sm);
 }
 .fab-option-unset {
   background: var(--bg-elev);
@@ -1071,14 +1171,12 @@ body:not([data-tab="today"]) .fab-host {
 .fab-option-no.armed {
   box-shadow:
     0 0 0 4px var(--no),
-    0 6px 18px color-mix(in srgb, var(--no) 38%, transparent),
     var(--shadow-sm);
 }
 
 .fab-option-yes.armed {
   box-shadow:
     0 0 0 4px var(--yes),
-    0 6px 18px color-mix(in srgb, var(--yes) 38%, transparent),
     var(--shadow-sm);
 }
 
@@ -1086,7 +1184,7 @@ body:not([data-tab="today"]) .fab-host {
   background: var(--bg-elev-2);
   box-shadow:
     0 0 0 4px var(--border-strong),
-    var(--shadow);
+    var(--shadow-sm);
 }
 
 /* ---------- Menu sheet ---------- */
@@ -1155,4 +1253,83 @@ body:not([data-tab="today"]) .fab-host {
 
 .close-btn {
   margin-top: var(--space-1);
+}
+
+/* ---------- Food picker sheet ---------- */
+
+.food-picker-sheet {
+  border: 0;
+  background: var(--bg);
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  color: var(--fg);
+}
+
+.food-picker-sheet::backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.food-picker-sheet[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.food-picker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: calc(env(safe-area-inset-top) + var(--space-3)) var(--space-3) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+
+.food-picker-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+.picker-close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: none;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+  transition: filter 0.12s ease, transform 0.08s ease, box-shadow 0.12s ease;
+}
+
+.picker-close-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-sm), 0 0 0 3px var(--accent-soft);
+}
+
+.picker-close-btn:active {
+  filter: brightness(0.94);
+  transform: scale(0.95);
+}
+
+.food-picker-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-3) calc(var(--space-3) + env(safe-area-inset-bottom));
+  overflow-y: auto;
 }

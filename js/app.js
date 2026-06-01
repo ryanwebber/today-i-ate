@@ -49,6 +49,9 @@
     })(),
     search: "",
     fabOpen: false,
+    // Snapshot of the Frequent ordering taken when the picker opens, so
+    // toggling foods inside the picker doesn't shuffle the chips around.
+    pickerFrequent: null,
   };
 
   // ---------- DOM helpers ----------
@@ -128,15 +131,16 @@
     const loggedRoot = $("#logged-chips");
     loggedRoot.innerHTML = "";
     if (day.foods.length === 0) {
-      loggedRoot.appendChild(el("div", { class: "chip-empty" }, "Nothing logged yet."));
+      loggedRoot.appendChild(el("div", { class: "chip-empty" }, "Nothing logged"));
     } else {
       for (const id of day.foods) {
         const f = FOODS.resolve(id, state.customFoods);
+        const isUnknown = id === "unknown";
         loggedRoot.appendChild(
           el(
             "button",
             {
-              class: "chip selected",
+              class: (isUnknown ? "chip-unknown" : "chip") + " selected",
               onClick: () => {
                 STORAGE.toggleFood(ui.date, id);
                 renderToday();
@@ -149,20 +153,28 @@
     }
     $("#logged-count").textContent = day.foods.length;
 
-    // Same as yesterday
-    const yesterday = STORAGE.getDay(shiftDay(ui.date, -1));
-    const showSAY = day.foods.length === 0 && yesterday.foods.length > 0;
-    const sayBtn = $("#same-as-yesterday");
-    sayBtn.hidden = !showSAY;
-    if (showSAY) {
-      sayBtn.textContent = `Same as yesterday (${yesterday.foods.length})`;
+    // Keep picker contents synced (selection state, frequent ordering)
+    renderFoodPicker();
+  }
+
+  function renderFoodPicker() {
+    const day = STORAGE.getDay(ui.date);
+    const state = STORAGE.getState();
+    const loggedSet = new Set(day.foods);
+
+    // Unknown chip selection state (rendered by HTML, just toggle the class)
+    const unknownChip = $("#chip-unknown");
+    if (unknownChip) {
+      unknownChip.classList.toggle("selected", loggedSet.has("unknown"));
     }
 
-    // Frequent chips: top 12 from MRU minus already-logged
+    // Frequent chips: stable ordering for the picker's lifetime so toggling
+    // doesn't shuffle the layout. The list is captured fresh on each open.
+    // Wildcard "unknown" lives in its own dedicated section, not Frequent.
     const freqRoot = $("#frequent-chips");
     freqRoot.innerHTML = "";
-    const loggedSet = new Set(day.foods);
-    const freq = state.recentFoodIds.filter((id) => !loggedSet.has(id)).slice(0, 12);
+    const freqSource = ui.pickerFrequent || state.recentFoodIds.slice(0, 12);
+    const freq = freqSource.filter((id) => id !== "unknown");
     if (freq.length === 0) {
       freqRoot.appendChild(
         el("div", { class: "chip-empty" }, "Foods you log will appear here for quick access.")
@@ -170,11 +182,12 @@
     } else {
       for (const id of freq) {
         const f = FOODS.resolve(id, state.customFoods);
+        const isSelected = loggedSet.has(id);
         freqRoot.appendChild(
           el(
             "button",
             {
-              class: "chip",
+              class: "chip" + (isSelected ? " selected" : ""),
               onClick: () => {
                 STORAGE.toggleFood(ui.date, id);
                 renderToday();
@@ -186,11 +199,7 @@
       }
     }
 
-    // Food list
     renderFoodList(day, state);
-
-    // Note
-    $("#day-note").value = day.note || "";
   }
 
   function renderFoodList(day, state) {
@@ -562,6 +571,19 @@
         }
       } else if (action === "close-menu") {
         $("#menu-sheet").close();
+      } else if (action === "open-food-picker") {
+        $("#food-search").value = "";
+        ui.search = "";
+        // Snapshot the current MRU so chip order stays stable while the
+        // picker is open, even as the user toggles things.
+        ui.pickerFrequent = STORAGE.getState().recentFoodIds.slice(0, 12);
+        renderFoodPicker();
+        $("#food-picker-sheet").showModal();
+        const inner = $(".food-picker-inner");
+        if (inner) inner.scrollTop = 0;
+      } else if (action === "close-food-picker") {
+        ui.pickerFrequent = null;
+        $("#food-picker-sheet").close();
       }
     });
 
@@ -572,19 +594,6 @@
         renderToday();
         renderFab();
       }
-    });
-
-    // Same as yesterday
-    $("#same-as-yesterday").addEventListener("click", () => {
-      const y = STORAGE.getDay(shiftDay(ui.date, -1));
-      if (y.foods.length === 0) return;
-      const today = STORAGE.getDay(ui.date);
-      const merged = today.foods.slice();
-      for (const id of y.foods) {
-        if (merged.indexOf(id) === -1) merged.push(id);
-      }
-      STORAGE.setDay(ui.date, { foods: merged });
-      renderToday();
     });
 
     // Search
@@ -598,6 +607,16 @@
       }, 100);
     });
 
+    // Unknown / wildcard chip in the picker — same toggle semantics as
+    // any other food, but lives in its own UI slot.
+    const unknownBtn = $("#chip-unknown");
+    if (unknownBtn) {
+      unknownBtn.addEventListener("click", () => {
+        STORAGE.toggleFood(ui.date, "unknown");
+        renderToday();
+      });
+    }
+
     // Custom food
     $("#add-custom-form").addEventListener("submit", (e) => {
       e.preventDefault();
@@ -609,16 +628,6 @@
         input.value = "";
         renderToday();
       }
-    });
-
-    // Note
-    let noteTimer = null;
-    $("#day-note").addEventListener("input", (e) => {
-      clearTimeout(noteTimer);
-      const v = e.target.value;
-      noteTimer = setTimeout(() => {
-        STORAGE.setNote(ui.date, v);
-      }, 250);
     });
 
     // Import file
@@ -768,6 +777,27 @@
   function boot() {
     wire();
     setTab(tabFromHash());
+    pinFixedToLayoutViewport();
+  }
+
+  // iOS Safari follows fixed-position elements to the visual viewport when
+  // the soft keyboard opens, which makes the tab bar and FAB ride up. We
+  // counter that by translating them down by the keyboard's height so the
+  // keyboard covers them — the native-feeling behavior.
+  function pinFixedToLayoutViewport() {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const tabBar = $(".tab-bar");
+    const fabHost = $(".fab-host");
+    function adjust() {
+      const offset = window.innerHeight - vv.height - vv.offsetTop;
+      const t = offset > 1 ? `translateY(${offset}px)` : "";
+      if (tabBar) tabBar.style.transform = t;
+      if (fabHost) fabHost.style.transform = t;
+    }
+    vv.addEventListener("resize", adjust);
+    vv.addEventListener("scroll", adjust);
+    adjust();
   }
 
   if (document.readyState === "loading") {

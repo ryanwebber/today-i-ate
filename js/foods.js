@@ -24,16 +24,14 @@ window.FOODS = (function () {
       id: "grains",
       label: "Grains",
       items: [
-        ["wheat_bread", "Wheat bread"],
-        ["pasta", "Pasta"],
-        ["pizza", "Pizza"],
-        ["crackers", "Crackers"],
-        ["cereal", "Breakfast cereal"],
+        ["wheat", "Wheat"],
+        ["yeast", "Yeast"],
         ["oats", "Oats"],
         ["rice", "Rice"],
         ["quinoa", "Quinoa"],
         ["corn", "Corn / cornmeal"],
         ["rye", "Rye"],
+        ["barley", "Barley"],
       ],
     },
     {
@@ -47,7 +45,6 @@ window.FOODS = (function () {
         ["peanuts", "Peanuts"],
         ["soy_tofu", "Soy / tofu"],
         ["edamame", "Edamame"],
-        ["hummus", "Hummus"],
       ],
     },
     {
@@ -196,6 +193,19 @@ window.FOODS = (function () {
 
   const all = [];
   const byId = {};
+
+  // Special wildcard entry — not in any displayed category, but registered
+  // so the stats engine treats it like any other food for the purposes of
+  // its own RR. Excluded from Frequent and the categorized food list.
+  const unknown = {
+    id: "unknown",
+    name: "Unknown",
+    category: "wildcard",
+    categoryLabel: "Wildcard",
+  };
+  all.push(unknown);
+  byId.unknown = unknown;
+
   for (const cat of categories) {
     for (const [id, name] of cat.items) {
       const entry = { id, name, category: cat.id, categoryLabel: cat.label };
@@ -207,6 +217,7 @@ window.FOODS = (function () {
   return {
     categories: categories.map((c) => ({ id: c.id, label: c.label })),
     all,
+    unknown,
     byId,
 
     // Resolves a food ID (built-in or custom) to a display object.

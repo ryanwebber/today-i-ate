@@ -150,6 +150,14 @@ window.STATS = (function () {
       let a = 0, b = 0, c = 0, d = 0;
       for (const day of analyzed) {
         const ate = day.foods.indexOf(food.id) !== -1;
+        // Wildcard exclusion: when the user marked a meal as "unknown" and
+        // this specific food isn't logged, we can't tell whether it was
+        // truly absent or hidden inside the unknown meal — so we drop the
+        // day from this food's table. Doesn't apply when analyzing the
+        // "unknown" token itself.
+        if (food.id !== "unknown" && !ate && day.foods.indexOf("unknown") !== -1) {
+          continue;
+        }
         const sym = day.symptom === "yes";
         if (ate && sym) a++;
         else if (ate && !sym) b++;

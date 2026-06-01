@@ -25,6 +25,5 @@ node_modules/
 # OS
 Thumbs.db
 
-# Local-only seed/test data
-seed-data.json
-scripts/
+# Generated test fixture (regenerated automatically by tests/run-tests.mjs)
+tests/test-import.json

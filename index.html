@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0e0e10" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#faf6ef" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1f1a13" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="I Ate" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -30,41 +31,14 @@
             <span class="counter" id="logged-count">0</span>
           </h2>
           <div class="chip-row" id="logged-chips"></div>
-          <button class="ghost-btn" id="same-as-yesterday" hidden>Same as yesterday</button>
         </section>
 
-        <section class="block">
-          <h2 class="block-title">Frequent</h2>
-          <div class="chip-row" id="frequent-chips"></div>
-        </section>
-
-        <section class="block">
-          <h2 class="block-title">All foods</h2>
-          <input
-            type="search"
-            id="food-search"
-            placeholder="Search foods…"
-            inputmode="search"
-            autocomplete="off"
-            autocapitalize="none"
-            autocorrect="off"
-          />
-          <div id="food-list" class="food-list"></div>
-          <form class="add-custom" id="add-custom-form">
-            <input
-              type="text"
-              id="add-custom-input"
-              placeholder="Add custom food…"
-              autocomplete="off"
-            />
-            <button type="submit" class="ghost-btn">Add</button>
-          </form>
-        </section>
-
-        <section class="block">
-          <label for="day-note" class="block-title">Note</label>
-          <textarea id="day-note" rows="2" placeholder="Optional note (e.g. ate out, unsure of ingredients)"></textarea>
-        </section>
+        <button class="add-foods-btn" data-action="open-food-picker" aria-label="Add foods">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        </button>
       </section>
 
       <!-- CALENDAR VIEW -->
@@ -168,6 +142,56 @@
           <button class="menu-item danger" data-action="reset">Reset all data…</button>
           <p class="muted small" id="export-status"></p>
           <button class="ghost-btn close-btn" data-action="close-menu">Close</button>
+        </div>
+      </dialog>
+
+      <!-- FOOD PICKER SHEET -->
+      <dialog class="food-picker-sheet" id="food-picker-sheet" aria-label="Add foods">
+        <header class="food-picker-head">
+          <h2>Add foods</h2>
+          <button class="picker-close-btn" data-action="close-food-picker" aria-label="Done">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </button>
+        </header>
+        <div class="food-picker-inner">
+          <input
+            type="search"
+            id="food-search"
+            placeholder="Search foods…"
+            inputmode="search"
+            autocomplete="off"
+            autocapitalize="none"
+            autocorrect="off"
+          />
+
+          <section class="block" id="frequent-block">
+            <h3 class="block-title">Frequent</h3>
+            <div class="chip-row" id="frequent-chips"></div>
+          </section>
+
+          <section class="block">
+            <h3 class="block-title">All foods</h3>
+            <div id="food-list" class="food-list"></div>
+          </section>
+
+          <section class="unknown-section">
+            <button class="chip-unknown" id="chip-unknown" type="button">
+              <span class="chip-unknown-label">Unknown</span>
+            </button>
+            <p class="unknown-hint">Tag a meal whose ingredients you can't list — restaurant food, leftovers, anything fuzzy.</p>
+          </section>
+
+          <form class="add-custom" id="add-custom-form">
+            <input
+              type="text"
+              id="add-custom-input"
+              placeholder="Add custom food…"
+              autocomplete="off"
+            />
+            <button type="submit" class="ghost-btn">Add</button>
+          </form>
         </div>
       </dialog>
     </main>
