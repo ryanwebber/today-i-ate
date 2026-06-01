@@ -34,15 +34,56 @@ window.STORAGE = (function () {
     }
   }
 
+  // Maps legacy food IDs to their current replacements. Applied on every
+  // load/import so old data round-trips cleanly even after a food list change.
+  // - Renames: same ingredient, new id (e.g. wheat_bread → wheat).
+  // - Composites: collapsed to their primary atomic ingredient. Lossy on
+  //   secondary ingredients (pizza had cheese + tomato too, but at least
+  //   the wheat signal is preserved). Users can adjust manually if needed.
+  const LEGACY_FOOD_ID_MAP = {
+    wheat_bread: "wheat",
+    pasta: "wheat",
+    pizza: "wheat",
+    crackers: "wheat",
+    cereal: "wheat",
+    hummus: "chickpeas",
+  };
+
+  function migrateFoodIdList(ids) {
+    if (!Array.isArray(ids)) return [];
+    const seen = new Set();
+    const out = [];
+    for (const id of ids) {
+      if (typeof id !== "string") continue;
+      const mapped = Object.prototype.hasOwnProperty.call(LEGACY_FOOD_ID_MAP, id)
+        ? LEGACY_FOOD_ID_MAP[id]
+        : id;
+      if (mapped == null) continue;
+      if (seen.has(mapped)) continue; // dedupe (e.g. wheat_bread + wheat both → wheat)
+      seen.add(mapped);
+      out.push(mapped);
+    }
+    return out;
+  }
+
   function migrate(s) {
-    // No migrations yet — v1 is current. Defensive defaults for older saves.
     const fresh = emptyState();
-    return Object.assign(fresh, s, {
+    const merged = Object.assign(fresh, s, {
       days: s.days || {},
       customFoods: s.customFoods || [],
       recentFoodIds: s.recentFoodIds || [],
       settings: Object.assign(fresh.settings, s.settings || {}),
     });
+
+    for (const dateKey in merged.days) {
+      const day = merged.days[dateKey];
+      if (day && Array.isArray(day.foods)) {
+        day.foods = migrateFoodIdList(day.foods);
+      }
+    }
+    merged.recentFoodIds = migrateFoodIdList(merged.recentFoodIds);
+
+    return merged;
   }
 
   function save() {

@@ -137,3 +137,109 @@ test("importJson(merge) keeps existing days, incoming wins on conflict", () => {
   assert(state.days["2026-06-02"], "non-conflicting existing day kept");
   assert(state.days["2026-07-01"], "new day added");
 });
+
+suite("STORAGE — legacy ID migration");
+
+test("rename: wheat_bread → wheat in days", () => {
+  STORAGE.reset();
+  const incoming = JSON.stringify({
+    schemaVersion: 1,
+    days: { "2026-06-01": { foods: ["wheat_bread", "garlic"], symptom: "yes", note: "" } },
+    customFoods: [],
+    recentFoodIds: [],
+    settings: {},
+  });
+  STORAGE.importJson(incoming, "replace");
+  const day = STORAGE.getDay("2026-06-01");
+  assert(day.foods.includes("wheat"), "should have wheat");
+  assert(!day.foods.includes("wheat_bread"), "should NOT have wheat_bread");
+  assert(day.foods.includes("garlic"));
+});
+
+test("composites collapse to primary ingredient", () => {
+  STORAGE.reset();
+  const incoming = JSON.stringify({
+    schemaVersion: 1,
+    days: {
+      "2026-06-01": { foods: ["pasta"],    symptom: "yes", note: "" },
+      "2026-06-02": { foods: ["pizza"],    symptom: "no",  note: "" },
+      "2026-06-03": { foods: ["crackers"], symptom: "yes", note: "" },
+      "2026-06-04": { foods: ["cereal"],   symptom: "no",  note: "" },
+      "2026-06-05": { foods: ["hummus"],   symptom: "yes", note: "" },
+    },
+    customFoods: [],
+    recentFoodIds: [],
+    settings: {},
+  });
+  STORAGE.importJson(incoming, "replace");
+  const days = STORAGE.getState().days;
+  assertEqual(days["2026-06-01"].foods[0], "wheat");
+  assertEqual(days["2026-06-02"].foods[0], "wheat");
+  assertEqual(days["2026-06-03"].foods[0], "wheat");
+  assertEqual(days["2026-06-04"].foods[0], "wheat");
+  assertEqual(days["2026-06-05"].foods[0], "chickpeas");
+});
+
+test("recents are migrated and deduped", () => {
+  STORAGE.reset();
+  const incoming = JSON.stringify({
+    schemaVersion: 1,
+    days: {},
+    customFoods: [],
+    // wheat_bread and pasta both map to wheat; should collapse with the
+    // existing "wheat" entry into a single deduped recents list.
+    recentFoodIds: ["wheat_bread", "wheat", "pasta", "garlic"],
+    settings: {},
+  });
+  STORAGE.importJson(incoming, "replace");
+  const recents = STORAGE.getState().recentFoodIds;
+  assertEqual(recents.length, 2, "duplicates collapsed");
+  assertEqual(recents[0], "wheat");
+  assertEqual(recents[1], "garlic");
+});
+
+test("days with multiple legacy ids dedupe to single new id", () => {
+  STORAGE.reset();
+  const incoming = JSON.stringify({
+    schemaVersion: 1,
+    days: { "2026-06-01": { foods: ["pasta", "wheat_bread", "wheat"], symptom: "yes", note: "" } },
+    customFoods: [],
+    recentFoodIds: [],
+    settings: {},
+  });
+  STORAGE.importJson(incoming, "replace");
+  const day = STORAGE.getDay("2026-06-01");
+  assertEqual(day.foods.length, 1, "all three pasta/wheat_bread/wheat collapse");
+  assertEqual(day.foods[0], "wheat");
+});
+
+test("migration is idempotent — already-new IDs are preserved", () => {
+  STORAGE.reset();
+  const incoming = JSON.stringify({
+    schemaVersion: 1,
+    days: { "2026-06-01": { foods: ["wheat", "garlic"], symptom: "yes", note: "" } },
+    customFoods: [],
+    recentFoodIds: ["wheat", "garlic"],
+    settings: {},
+  });
+  STORAGE.importJson(incoming, "replace");
+  const day = STORAGE.getDay("2026-06-01");
+  assertEqual(day.foods.length, 2);
+  assertEqual(day.foods[0], "wheat");
+  assertEqual(day.foods[1], "garlic");
+});
+
+test("unknown legacy ids pass through unchanged (won't crash)", () => {
+  STORAGE.reset();
+  const incoming = JSON.stringify({
+    schemaVersion: 1,
+    days: { "2026-06-01": { foods: ["something_obscure", "wheat"], symptom: "yes", note: "" } },
+    customFoods: [],
+    recentFoodIds: [],
+    settings: {},
+  });
+  STORAGE.importJson(incoming, "replace");
+  const day = STORAGE.getDay("2026-06-01");
+  assert(day.foods.includes("something_obscure"));
+  assert(day.foods.includes("wheat"));
+});
