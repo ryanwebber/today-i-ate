@@ -149,9 +149,16 @@ body {
 body {
   /* Fixed-height body with no scroll: stops iOS from rubber-banding the
      document (which would carry the fixed tab bar / FAB along with it).
-     #app becomes the scroll container instead. */
+     #app becomes the scroll container instead.
+
+     Uses `lvh` (large viewport height) rather than `dvh` so the body's
+     height stays at the largest possible viewport size — the screen as if
+     iOS's toolbars were collapsed. With overflow:hidden the user can't
+     trigger a body scroll to update `dvh`, so without `lvh` the body can
+     get stuck at the smaller "toolbars-visible" size, leaving a strip of
+     blank space below the fixed tab bar. */
   height: 100vh;
-  height: 100dvh;
+  height: 100lvh;
   overflow: hidden;
   background: var(--bg);
 }
@@ -193,10 +200,19 @@ button {
 }
 
 /* Today fills the viewport so the centered + button has space to live in.
-   Leave room for the tab bar + the symptom FAB at the bottom. */
+   Leave room for the tab bar + the symptom FAB at the bottom.
+   Uses `lvh` to match body — see body rule for rationale. */
 .view-today {
   min-height: calc(
-    100dvh
+    100vh
+    - var(--tab-bar-h)
+    - var(--fab-size)
+    - var(--space-5)
+    - env(safe-area-inset-top)
+    - env(safe-area-inset-bottom)
+  );
+  min-height: calc(
+    100lvh
     - var(--tab-bar-h)
     - var(--fab-size)
     - var(--space-5)
