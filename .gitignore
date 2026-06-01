@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Claude Code working dir
+.claude/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node (defensive — no deps used today, but if you ever add tooling)
+node_modules/
+
+# OS
+Thumbs.db
+
+# Local-only seed/test data
+seed-data.json
+scripts/
