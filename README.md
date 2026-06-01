@@ -38,8 +38,11 @@ The app uses a Service Worker (`sw.js`) for cache control on iOS PWA
 installs. To force a reload across all installed instances:
 
 1. Bump `CACHE_NAME` in `sw.js` (e.g. `tia-v1` → `tia-v2`).
-2. Push to your host (GitHub Pages, etc.).
-3. iOS PWAs auto-reload on next launch or focus — usually within seconds
+2. Bump `APP_VERSION` at the top of `js/app.js` to match (e.g. `v1` → `v2`).
+   This is the string shown in the menu sheet's footer so you can verify
+   which build is live on your home-screen PWA.
+3. Push to your host (GitHub Pages, etc.).
+4. iOS PWAs auto-reload on next launch or focus — usually within seconds
    of opening, no need to delete and reinstall.
 
 If you add or remove top-level files, also update the `PRECACHE` list in

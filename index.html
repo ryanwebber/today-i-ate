@@ -133,13 +133,63 @@
       <!-- MENU SHEET -->
       <dialog class="menu-sheet" id="menu-sheet">
         <div class="menu-sheet-inner">
-          <h2>Menu</h2>
-          <button class="menu-item" data-action="export">Export JSON</button>
-          <button class="menu-item" data-action="import">Import JSON…</button>
-          <input type="file" id="import-file" accept="application/json" hidden />
-          <button class="menu-item danger" data-action="reset">Reset all data…</button>
-          <p class="muted small" id="export-status"></p>
-          <button class="ghost-btn close-btn" data-action="close-menu">Close</button>
+          <header class="menu-sheet-head">
+            <h2 class="menu-sheet-title">
+              <span class="menu-sheet-name">Today I Ate</span>
+              <span class="menu-sheet-version" id="menu-version">v?</span>
+            </h2>
+            <button class="menu-close-x" data-action="close-menu" aria-label="Close menu">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </header>
+
+          <section class="menu-section">
+            <h3 class="menu-section-label">Data</h3>
+            <button class="menu-item" data-action="export">
+              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span class="menu-item-text">
+                <span class="menu-item-label">Export JSON</span>
+                <span class="menu-item-desc">Save all logged data to a file</span>
+              </span>
+            </button>
+            <button class="menu-item" data-action="import">
+              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <span class="menu-item-text">
+                <span class="menu-item-label">Import JSON…</span>
+                <span class="menu-item-desc">Replace or merge from a backup</span>
+              </span>
+            </button>
+            <input type="file" id="import-file" accept="application/json" hidden />
+          </section>
+
+          <section class="menu-section">
+            <h3 class="menu-section-label">Danger zone</h3>
+            <button class="menu-item danger" data-action="reset">
+              <svg class="menu-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                <line x1="10" y1="11" x2="10" y2="17" />
+                <line x1="14" y1="11" x2="14" y2="17" />
+              </svg>
+              <span class="menu-item-text">
+                <span class="menu-item-label">Reset all data…</span>
+                <span class="menu-item-desc">Permanently erase every logged day</span>
+              </span>
+            </button>
+          </section>
+
+          <p class="muted small menu-status" id="export-status"></p>
         </div>
       </dialog>
 
