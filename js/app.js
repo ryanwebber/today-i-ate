@@ -447,7 +447,7 @@
     for (const r of tested) {
       const cls =
         r.badge === "significant" ? "is-significant" :
-        r.badge === "suggestive" ? "is-suggestive" : "";
+          r.badge === "suggestive" ? "is-suggestive" : "";
       tbody.appendChild(
         el("tr", { class: cls }, [
           el("td", { class: "food-name" }, r.foodName),
@@ -775,7 +775,7 @@
       // primary touch/mouse, preventDefault keeps the page from selecting text
       // or rubber-banding while dragging.
       e.preventDefault();
-      try { fabMain.setPointerCapture(e.pointerId); } catch (_) {}
+      try { fabMain.setPointerCapture(e.pointerId); } catch (_) { }
       drag = {
         pointerId: e.pointerId,
         wasOpen: ui.fabOpen,
@@ -805,7 +805,7 @@
 
     function endDrag(e, cancelled) {
       if (!drag || e.pointerId !== drag.pointerId) return;
-      try { fabMain.releasePointerCapture(e.pointerId); } catch (_) {}
+      try { fabMain.releasePointerCapture(e.pointerId); } catch (_) { }
       const { armed, hadMove, wasOpen } = drag;
       drag = null;
       clearArmed();
@@ -838,44 +838,8 @@
     wire();
     setTab(tabFromHash());
     pinFixedToLayoutViewport();
-    registerServiceWorker();
     const versionEl = $("#menu-version");
     if (versionEl) versionEl.textContent = APP_VERSION;
-  }
-
-  // Service Worker handles cache control + auto-reload so iOS PWA users
-  // get the latest version without manually clearing data.
-  // - On first install: nothing happens (no prior controller).
-  // - On update: new SW installs, statechange fires "installed" with a
-  //   prior controller present → reload picks up new code.
-  // - reg.update() is called whenever the app comes back into focus, so
-  //   we don't have to wait for the next cold launch to detect updates.
-  function registerServiceWorker() {
-    if (!("serviceWorker" in navigator)) return;
-    if (location.protocol === "file:") return; // skip in local file:// dev
-
-    navigator.serviceWorker
-      .register("./sw.js")
-      .then((reg) => {
-        reg.addEventListener("updatefound", () => {
-          const sw = reg.installing;
-          if (!sw) return;
-          sw.addEventListener("statechange", () => {
-            if (
-              sw.state === "installed" &&
-              navigator.serviceWorker.controller
-            ) {
-              window.location.reload();
-            }
-          });
-        });
-        document.addEventListener("visibilitychange", () => {
-          if (document.visibilityState === "visible") {
-            reg.update().catch(() => {});
-          }
-        });
-      })
-      .catch((err) => console.warn("SW registration failed:", err));
   }
 
   // iOS Safari follows fixed-position elements to the visual viewport when
