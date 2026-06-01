@@ -319,48 +319,103 @@
     const root = $("#insights-summary");
     root.innerHTML = "";
 
-    const items = [
-      ["Tracked", `${result.totalDays} ${result.totalDays === 1 ? "day" : "days"}`],
-      ["Analyzed", `${result.analyzedDays} (${result.totalDays - result.analyzedDays} unflagged)`],
-    ];
-    if (result.analyzedDays > 0) {
-      items.push([
-        "Symptoms",
-        `${result.symptomYes}/${result.analyzedDays} (${(result.baseline * 100).toFixed(0)}%)`,
-      ]);
-    }
+    // Each stat: { label, value, sub? } where sub is either a plain string
+    // or a pre-built node (for the colored delta on Last 30d).
+    const stats = [];
 
-    for (const [label, value] of items) {
-      root.appendChild(
-        el("span", { class: "stat" }, [
-          el("span", { class: "stat-label" }, label),
-          el("span", { class: "stat-value" }, value),
-        ])
-      );
-    }
+    stats.push({
+      label: "Tracked",
+      value: String(result.totalDays),
+      sub: result.totalDays === 1 ? "day" : "days",
+    });
+
+    const unflagged = result.totalDays - result.analyzedDays;
+    stats.push({
+      label: "Analyzed",
+      value: String(result.analyzedDays),
+      sub: unflagged > 0
+        ? `${unflagged} unflagged`
+        : (result.totalDays > 0 ? "all flagged" : "—"),
+    });
+
+    stats.push({
+      label: "Symptoms",
+      value: result.analyzedDays > 0
+        ? `${(result.baseline * 100).toFixed(0)}%`
+        : "—",
+      sub: result.analyzedDays > 0
+        ? `${result.symptomYes}/${result.analyzedDays}`
+        : "no data",
+    });
 
     if (result.recentBaseline !== null && result.analyzedDays > 0) {
       const delta = result.recentBaseline - result.baseline;
-      const last30 = `${(result.recentBaseline * 100).toFixed(0)}%`;
-      const valEl = el("span", { class: "stat-value" }, last30);
+      let subNode;
       if (Math.abs(delta) >= 0.02) {
         const dir = delta > 0 ? "up" : "down";
         const arrow = delta > 0 ? "▲" : "▼";
-        valEl.appendChild(
-          el(
-            "span",
-            { class: "delta " + dir },
-            `${arrow}${(Math.abs(delta) * 100).toFixed(0)}pt`
-          )
+        subNode = el(
+          "span",
+          { class: "delta " + dir },
+          `${arrow}${(Math.abs(delta) * 100).toFixed(0)}pt`
         );
+      } else {
+        subNode = "steady";
       }
-      root.appendChild(
-        el("span", { class: "stat" }, [
-          el("span", { class: "stat-label" }, "Last 30d"),
-          valEl,
-        ])
-      );
+      stats.push({
+        label: "Last 30d",
+        value: `${(result.recentBaseline * 100).toFixed(0)}%`,
+        sub: subNode,
+      });
+    } else {
+      stats.push({ label: "Last 30d", value: "—", sub: "no data" });
     }
+
+    const streak = currentCleanStreak(STORAGE.getState().days);
+    stats.push({
+      label: "Streak",
+      value: String(streak),
+      sub: streak === 1 ? "day clear" : "days clear",
+    });
+
+    const sigCount = result.rows.filter((r) => r.badge === "significant").length;
+    stats.push({
+      label: "Suspects",
+      value: String(sigCount),
+      sub: "q ≤ 0.10",
+    });
+
+    for (const s of stats) {
+      const stat = el("div", { class: "stat" });
+      stat.appendChild(el("span", { class: "stat-label" }, s.label));
+      stat.appendChild(el("span", { class: "stat-value" }, s.value));
+      if (s.sub != null) {
+        if (typeof s.sub === "string") {
+          stat.appendChild(el("span", { class: "stat-sub" }, s.sub));
+        } else {
+          s.sub.classList.add("stat-sub");
+          stat.appendChild(s.sub);
+        }
+      }
+      root.appendChild(stat);
+    }
+  }
+
+  // Number of consecutive days walking back from today where symptom === "no".
+  // Breaks on the first "yes", null/unset, or missing day record.
+  function currentCleanStreak(days) {
+    let streak = 0;
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(start);
+      d.setDate(d.getDate() - i);
+      const key = dateKey(d);
+      const day = days[key];
+      if (!day || day.symptom !== "no") break;
+      streak++;
+    }
+    return streak;
   }
 
   function renderFoodsTable(result) {
@@ -778,6 +833,42 @@
     wire();
     setTab(tabFromHash());
     pinFixedToLayoutViewport();
+    registerServiceWorker();
+  }
+
+  // Service Worker handles cache control + auto-reload so iOS PWA users
+  // get the latest version without manually clearing data.
+  // - On first install: nothing happens (no prior controller).
+  // - On update: new SW installs, statechange fires "installed" with a
+  //   prior controller present → reload picks up new code.
+  // - reg.update() is called whenever the app comes back into focus, so
+  //   we don't have to wait for the next cold launch to detect updates.
+  function registerServiceWorker() {
+    if (!("serviceWorker" in navigator)) return;
+    if (location.protocol === "file:") return; // skip in local file:// dev
+
+    navigator.serviceWorker
+      .register("./sw.js")
+      .then((reg) => {
+        reg.addEventListener("updatefound", () => {
+          const sw = reg.installing;
+          if (!sw) return;
+          sw.addEventListener("statechange", () => {
+            if (
+              sw.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              window.location.reload();
+            }
+          });
+        });
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") {
+            reg.update().catch(() => {});
+          }
+        });
+      })
+      .catch((err) => console.warn("SW registration failed:", err));
   }
 
   // iOS Safari follows fixed-position elements to the visual viewport when

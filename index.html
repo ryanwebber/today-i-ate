@@ -43,13 +43,10 @@
 
       <!-- CALENDAR VIEW -->
       <section class="view view-calendar" data-view="calendar" hidden>
-        <header class="page-header">
-          <p class="page-eyebrow">History</p>
-          <div class="day-header">
-            <button class="day-nav" data-action="prev-month" aria-label="Previous month">‹</button>
-            <span class="day-label" id="calendar-label">—</span>
-            <button class="day-nav" data-action="next-month" aria-label="Next month">›</button>
-          </div>
+        <header class="day-header">
+          <button class="day-nav" data-action="prev-month" aria-label="Previous month">‹</button>
+          <span class="day-label" id="calendar-label">—</span>
+          <button class="day-nav" data-action="next-month" aria-label="Next month">›</button>
         </header>
         <div class="calendar-legend">
           <span><i class="dot dot-yes"></i> Symptoms</span>
@@ -64,10 +61,11 @@
 
       <!-- INSIGHTS VIEW -->
       <section class="view view-insights" data-view="insights" hidden>
-        <header class="insights-head">
-          <h1 class="insights-title">Insights</h1>
-          <div class="insights-summary" id="insights-summary"></div>
+        <header class="day-header">
+          <span class="day-label">Insights</span>
         </header>
+
+        <div class="insights-summary" id="insights-summary"></div>
 
         <section class="insights-section">
           <div class="insights-section-head">

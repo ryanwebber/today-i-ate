@@ -147,8 +147,12 @@ body {
 }
 
 body {
-  min-height: 100vh;
-  min-height: 100dvh;
+  /* Fixed-height body with no scroll: stops iOS from rubber-banding the
+     document (which would carry the fixed tab bar / FAB along with it).
+     #app becomes the scroll container instead. */
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background: var(--bg);
 }
 
@@ -157,6 +161,10 @@ body {
   padding-bottom: calc(var(--tab-bar-h) + env(safe-area-inset-bottom));
   max-width: 720px;
   margin: 0 auto;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* On the Today tab the symptom FAB floats above the tab bar; reserve room
@@ -199,36 +207,6 @@ button {
 
 .view[hidden] {
   display: none;
-}
-
-/* Page-level header used on Calendar and Insights */
-.page-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin-bottom: var(--space-1);
-}
-
-.page-eyebrow {
-  margin: 0;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent2);
-}
-
-.page-title {
-  margin: 0;
-  font-size: 1.6rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.page-subtitle {
-  margin: 0;
-  color: var(--fg-muted);
-  font-size: 0.95rem;
 }
 
 /* Section block (Today's view sections) */
@@ -317,10 +295,14 @@ button {
   padding: 12px 8px;
   border-radius: var(--radius-sm);
   position: relative;
+}
+
+/* Only the today-tab variant (which opens the date picker) is interactive. */
+.day-label[data-action] {
   cursor: pointer;
 }
 
-.day-label:active {
+.day-label[data-action]:active {
   background: var(--bg-elev);
 }
 
@@ -705,59 +687,50 @@ button {
 
 /* ---------- Insights ---------- */
 
-.insights-head {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: var(--space-2);
-  margin-bottom: var(--space-3);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.insights-title {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: 1.35rem;
-  font-weight: 600;
-  letter-spacing: 0;
-}
-
 .insights-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px var(--space-3);
-  font-size: 0.85rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--space-2) var(--space-3);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  box-shadow: var(--shadow-sm);
   font-variant-numeric: tabular-nums;
 }
 
 .insights-summary .stat {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
 }
 
 .insights-summary .stat-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--fg-muted);
 }
 
 .insights-summary .stat-value {
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--fg);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
-.insights-summary .stat-value .delta {
-  margin-left: 4px;
-  font-weight: 600;
-  color: var(--fg-muted);
+.insights-summary .stat-sub {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--fg-subtle);
+  line-height: 1.2;
 }
 
-.insights-summary .stat-value .delta.up {
-  color: var(--yes);
-}
-
-.insights-summary .stat-value .delta.down {
-  color: var(--no);
-}
+.insights-summary .stat-sub.delta.up { color: var(--yes); }
+.insights-summary .stat-sub.delta.down { color: var(--no); }
 
 .insights-section {
   display: flex;
